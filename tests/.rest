@@ -2,29 +2,30 @@
 # Content-Type: application/json
 
 # {
-#   "username": "testuser",
-#   "email": "testuser@example.com",
-#   "password": "password123"
+#   "username": "testuser2",
+#   "email": "testuser2@example.com",
+#   "password": "password1233"
 # }
 
 # POST http://localhost:5000/api/auth/login
 # Content-Type: application/json
 
 # {
-#   "email": "testuser@example.com",
-#   "password": "password123"
+#   "email": "testuser2@example.com",
+#   "password": "password1233"
 # }
+
 # post http://localhost:5000/api/medications/add
 # Content-Type: application/json
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzI2ODUxMzU4LCJleHAiOjE3MjY4NTQ5NTh9.ps5Pfr-yEwFO8o5dXEfPTuWZcJAQC602iJT8GTUC2rQ
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzI2ODU2MzQ3LCJleHAiOjE3MjY4NTk5NDd9.xc2CCpTg8YsVV1BZ7ELX3dePH1j216t2q7wCnceFafo
 
 # {
-#   "name": "Aspirin",
-#   "description": "Aspirin 500mg tablets",
-#   "quantity": 50,
+#   "name": "Paracetamol",
+#   "description": "Paracetamol 500mg tablets",
+#   "quantity": 100,
 #   "condition": "new",
 #   "location": "Cairo",
-#   "price": 5.50,
+#   "price": 9.50,
 #   "donation": false
 # }
 

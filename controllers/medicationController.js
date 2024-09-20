@@ -1,7 +1,13 @@
 // controllers/medicationController.js
 const Medication = require('../models/Medication');
+const { validationResult } = require('express-validator');
 
 exports.addMedication = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { name, description, quantity, condition, location, price, donation } = req.body;
 
   try {

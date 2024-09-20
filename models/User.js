@@ -18,15 +18,6 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  role: {  // New role field (buyer, seller, or donor)
-    type: DataTypes.ENUM('buyer', 'seller', 'donor'),
-    allowNull: false,
-    defaultValue: 'buyer',
-  },
-  address: {  // New address field
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
 });
 
 // Hash the password before saving the user

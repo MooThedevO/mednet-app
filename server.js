@@ -3,6 +3,8 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const medicationRoutes = require('./routes/medicationRoutes');
 const sequelize = require('./models/index');
+const errorMiddleware = require('./middleware/errorMiddleware');
+
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +14,9 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/medications', medicationRoutes); // New medication route
+
+// Error middleware
+app.use(errorMiddleware);
 
 // Database Connection and Server Start
 sequelize.sync().then(() => {
