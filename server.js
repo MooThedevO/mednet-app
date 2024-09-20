@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const medicationRoutes = require('./routes/medicationRoutes');
 const sequelize = require('./models/index');
 require('dotenv').config();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/medications', medicationRoutes); // New medication route
 
 // Database Connection and Server Start
 sequelize.sync().then(() => {
