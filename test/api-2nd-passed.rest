@@ -1,0 +1,97 @@
+//1. User Signup:
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser5",
+  "email": "testuser5@example.com",
+  "password": "password1523"
+}
+###
+//2. User Login:
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser5@example.com",
+  "password": "newpassword456"
+}
+###
+//3. Add Medication:
+POST http://localhost:5000/api/medications/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTYzMDQsImV4cCI6MTcyNjkxOTkwNH0.Jxi8EbXs0CVFddSJEAHXJyaA26JumWTPq1t327BtZO8
+
+{
+  "name": "Paracetamol",
+  "description": "For fever and pain relief",
+  "quantity": 30,
+  "condition": "new",
+  "location": "Cairo",
+  "price": 20,
+  "donation": false,
+  "expirationDate": "2024-12-01",
+  "brand": "BrandA",
+  "dosage": "500mg",
+  "form": "tablet",
+  "storage": "Room temperature"
+}
+###
+//4. Get Medications:
+GET http://localhost:5000/api/medications
+###
+//5.Search Medications:
+GET http://localhost:5000/api/medications/search?name=Paracetamol&location=Cairo
+###
+//6. Update Medication:
+PUT http://localhost:5000/api/medications/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTYzMDQsImV4cCI6MTcyNjkxOTkwNH0.Jxi8EbXs0CVFddSJEAHXJyaA26JumWTPq1t327BtZO8
+
+{
+  "name": "Paracetamol Updated",
+  "quantity": 40
+}
+###
+//7. Delete Medication:
+DELETE http://localhost:5000/api/medications/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTgwMDYsImV4cCI6MTcyNjkyMTYwNn0.C5LHpL7cpzTZSWQz0BF9MJDGllxQG2GN43CfzTsM6jQ
+###
+//8. Update User:
+PUT http://localhost:5000/api/user/2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTgwMDYsImV4cCI6MTcyNjkyMTYwNn0.C5LHpL7cpzTZSWQz0BF9MJDGllxQG2GN43CfzTsM6jQ
+
+{
+  "username": "updatedUser2"
+}
+###
+//9. Delete User:
+DELETE http://localhost:5000/api/user/2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTgwMDYsImV4cCI6MTcyNjkyMTYwNn0.C5LHpL7cpzTZSWQz0BF9MJDGllxQG2GN43CfzTsM6jQ
+###
+//10. Update Password:
+PUT http://localhost:5000/api/user/2/password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTc5MDQsImV4cCI6MTcyNjkyMTUwNH0.5R-mpG5ym6H1YQRgnq9e6-N9xm3cCrUtaT4o15NBI_c
+
+{
+  "oldPassword": "password1523",
+  "newPassword": "newpassword456"
+}
+###
+//11. Get Profile:
+GET http://localhost:5000/api/user/profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTYzMDQsImV4cCI6MTcyNjkxOTkwNH0.Jxi8EbXs0CVFddSJEAHXJyaA26JumWTPq1t327BtZO8
+###
+//12. Update Profile:
+PUT http://localhost:5000/api/user/profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjY5MTc2NjgsImV4cCI6MTcyNjkyMTI2OH0.KNUd--il2gsEXlK_fdJfcYZbN1AbTWcE6uE5bO5dzZE
+
+{
+  "phoneNumber": "0123535552234568"
+}
