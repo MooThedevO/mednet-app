@@ -4,6 +4,8 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const medicationRoutes = require('./routes/medicationRoutes');
 const userRoutes = require('./routes/userRoutes');
+const medicationRequestRoutes = require('./routes/medicationRequestRoutes');
+const donationRoutes = require('./routes/donationRoutes');
 
 const sequelize = require('./models/index');
 const errorMiddleware = require('./middleware/errorMiddleware');
@@ -18,6 +20,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/medications', medicationRoutes); // New medication route
+app.use('/api/medication-requests', medicationRequestRoutes);
+app.use('/api/donations', donationRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

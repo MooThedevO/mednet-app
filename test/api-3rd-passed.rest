@@ -1,0 +1,112 @@
+### Signup User
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser1991",
+  "email": "testuser1991@example.com",
+  "password": "password123",
+  "fullName": "Test User One",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St",
+  "profilePicture": "https://example.com/profile1.jpg",
+  "role": "user"
+}
+###
+### Login User
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser1991@example.com",
+  "password": "password123"
+}
+###
+### Add Medication (Authenticated)
+POST http://localhost:5000/api/medications/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "name": "Ibuprofen",
+  "description": "Used for pain relief",
+  "quantity": 50,
+  "condition": "new",
+  "location": "Cairo",
+  "price": 10.50,
+  "donation": false,
+  "expirationDate": "2025-12-31",
+  "brand": "BrandName",
+  "dosage": "200mg",
+  "form": "tablet",
+  "storage": "Room temperature"
+}
+###
+//3.Medication Request Tests
+### Create Medication Request
+POST http://localhost:5000/api/medication-requests/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "medicationName": "Aspirin",
+  "urgency": "immediate",
+  "medicalCondition": "Headache",
+  "doctorPrescription": "https://example.com/prescription.pdf",
+  "type": "free"
+}
+### Get All Medication Requests
+GET http://localhost:5000/api/medication-requests/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+### Update Medication Request
+PUT http://localhost:5000/api/medication-requests/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "urgency": "within a week",
+  "medicalCondition": "Mild headache",
+  "type": "buy"
+}
+### Delete Medication Request
+DELETE http://localhost:5000/api/medication-requests/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+###
+//3.Donation Tests
+### Create Donation (Medication)
+POST http://localhost:5000/api/donations/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "medicationId": 1,
+  "amount": 20,
+  "isMonetary": false,
+  "anonymous": true
+}
+### Create Donation (Monetary)
+POST http://localhost:5000/api/donations/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "medicationId": 1,
+  "amount": 50,
+  "isMonetary": true,
+  "anonymous": false
+}
+### Get All Donations
+GET http://localhost:5000/api/donations/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+### Update Donation
+PUT http://localhost:5000/api/donations/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
+
+{
+  "amount": 30,
+  "status": "awaiting"
+}
+### Delete Donation
+DELETE http://localhost:5000/api/donations/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MjcwMjQ1NTgsImV4cCI6MTcyNzAyODE1OH0.r5M313c0GFGAiDAgcgX-h_oCOZwSJN8sRjTfBxdzChM
