@@ -1,42 +1,60 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const { User, Role } = require('../models');
 
-module.exports = (role = null) => (req, res, next) => {
-  const token = req.header('Authorization');
+// Auth middleware to verify token and attach user to request
+const authMiddleware =  (req, res, next) => {
+    const token = req.header('Authorization');
 
-  // Check if the token is present
-  if (!token || !token.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'No token, authorization denied' });
-  }
+    if (!token || !token.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token, authorization denied' });
+      }
+    
+    try {
+        const actualToken = token.split(' ')[1];
+        const decoded = jwt.verify(actualToken, process.env.SECRET_KEY);
+        const user =  User.findByPk(decoded.id, { include: [Role] });
 
-  // Extract the token part after "Bearer "
-  const actualToken = token.split(' ')[1];
+        if (!user || user.isDeleted) {
+          return res.status(404).json({ message: 'User not found' });
+      }
 
-  try {
-    const decoded = jwt.verify(actualToken, process.env.SECRET_KEY);  // Ensure SECRET_KEY is correct
-        // Log the decoded token for debugging
-
-    req.user = decoded; // Attach user info to the request
-
-    if (role && req.user.role !== role) { //handle roles
-      return res.status(403).json({ error: 'Access denied, insufficient permissions' });
-    }
+      req.user = {
+        id: user.id,
+        username: user.username,
+        roleId: user.roleId,
+        roleName: user.Role.name, // Include the role name dynamically from the Role model
+    };
 
     next();
-  } catch (err) {
-    res.status(401).json({ error: 'Token is not valid' });
-  }
-};
-module.exports.isAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Access denied. Admins only.' });
-  }
-  next();
+    } catch (err) {
+        res.status(500).json({ message: 'Token is not valid', error: err.message });
+    }
 };
 
-module.exports.isPharmacy = (req, res, next) => {
-  if (req.user.role !== 'pharmacy') {
-    return res.status(403).json({ error: 'Access denied. Only pharmacies can perform this action.' });
-  }
-  next();
-};
+// Role-based Authorization
+const authorize = (roles) =>  (req, res, next) => {
+      try {
+          const userRole =  Role.findByPk(req.user.roleId);
+          if (!roles.includes(userRole.name)) {
+              return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
+          }
+
+          next();
+      } catch (err) {
+          res.status(500).json({ message: 'Server error', error: err.message });
+      }
+  };
+
+// Self-authorization middleware to check if the user is performing actions on their own account
+const authorizeSelf = () =>  (req, res, next) => {
+      const { userId } = req.params.userId;
+      const requestingUser = req.user;
+
+      // Check if the requesting user is acting on their own account
+      if (parseInt(userId) !== requestingUser.id && !['admin', 'superadmin'].includes(requestingUser.roleName)) {
+        return res.status(403).json({ message: 'Not authorized to perform this action' });
+      }
+      next();
+  };
+
+module.exports = { authMiddleware, authorize, authorizeSelf };

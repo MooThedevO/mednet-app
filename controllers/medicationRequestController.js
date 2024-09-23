@@ -1,81 +1,73 @@
-// controllers/medicationRequestController.js
 const MedicationRequest = require('../models/MedicationRequest');
-const { validationResult } = require('express-validator');
+const UrgencyLevel = require('../models/UrgencyLevel');
+const Medication = require('../models/Medication');
+const MedicalCondition = require('../models/MedicalCondition')
+const RequestStatus = require('../models/RequestStatus');
+const User = require('../models/User');
 
-// Add a Medication Request
-exports.addMedicationRequest = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { medicationName, urgency, medicalCondition, doctorPrescription, type } = req.body;
-
+// Get all medication requests
+exports.getAllRequests = async (req, res) => {
   try {
-    const medicationRequest = await MedicationRequest.create({
-      medicationName,
-      urgency,
-      medicalCondition,
-      doctorPrescription,
-      type,
-      userId: req.user.id // Assuming the user is authenticated
+    const requests = await MedicationRequest.findAll({
+      where: { isDeleted: false },
+      include: [User, UrgencyLevel, Medication, MedicalCondition, RequestStatus]
     });
-
-    res.status(201).json(medicationRequest);
+    res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create medication request', details: error });
+    res.status(500).json({ error: 'Failed to fetch requests' });
   }
 };
 
-// Get all Medication Requests
-exports.getMedicationRequests = async (req, res) => {
+// Get a medication request by ID
+exports.getRequestById = async (req, res) => {
   try {
-    const medicationRequests = await MedicationRequest.findAll();
-    res.status(200).json(medicationRequests);
+    const request = await MedicationRequest.findByPk(req.params.requestId, {
+      include: [User, UrgencyLevel, Medication, MedicalCondition, RequestStatus]
+    });
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    res.status(200).json(request);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve medication requests', details: error });
+    res.status(500).json({ error: 'Failed to fetch request' });
   }
 };
 
-// Update a Medication Request
-exports.updateMedicationRequest = async (req, res) => {
-  const { id } = req.params;
+// Add a new medication request
+exports.addRequest = async (req, res) => {
   try {
-    const medicationRequest = await MedicationRequest.findByPk(id);
-
-    if (!medicationRequest) {
-      return res.status(404).json({ error: 'Medication request not found' });
-    }
-
-    if (medicationRequest.userId != req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized to update this request' });
-    }
-
-    await medicationRequest.update(req.body);
-    res.json({ message: 'Medication request updated successfully!' });
+    const newRequest = await MedicationRequest.create(req.body);
+    res.status(201).json(newRequest);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update medication request', details: error });
+    res.status(400).json({ error: 'Failed to add request' });
   }
 };
 
-// Delete a Medication Request
-exports.deleteMedicationRequest = async (req, res) => {
-  const { id } = req.params;
-
+// Update a medication request
+exports.updateRequest = async (req, res) => {
   try {
-    const medicationRequest = await MedicationRequest.findByPk(id);
-
-    if (!medicationRequest) {
-      return res.status(404).json({ error: 'Medication request not found' });
+    const request = await MedicationRequest.findByPk(req.params.requestId);
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
     }
-
-    if (medicationRequest.userId != req.user.id && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized to delete this request' });
-    }
-
-    await medicationRequest.destroy();
-    res.json({ message: 'Medication request deleted successfully!' });
+    await request.update(req.body);
+    res.status(200).json(request);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete medication request', details: error });
+    res.status(400).json({ error: 'Failed to update request' });
+  }
+};
+
+// Soft delete a medication request (soft delete = set isDeleted to true)
+exports.deleteRequest = async (req, res) => {
+  try {
+    const request = await MedicationRequest.findByPk(req.params.requestId);
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    request.isDeleted = true;
+    await request.save();
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete request' });
   }
 };

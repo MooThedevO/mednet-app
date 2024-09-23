@@ -1,40 +1,25 @@
 // models/Medication.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index');
+const MedicationForm = require('./MedicationForm'); // Import MedicationForm model
 
 const Medication = sequelize.define('Medication', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true
   },
   description: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  condition: {
-    type: DataTypes.ENUM('new', 'opened'),
-    allowNull: false,
-  },
-  location: {
+  activeIngredient: {
     type: DataTypes.STRING,
     allowNull: false,
   },
   price: {
     type: DataTypes.FLOAT,
     allowNull: true, // Optional if it's a donation
-  },
-  donation: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false, // By default, it's not a donation
-  },
-  expirationDate: {
-    type: DataTypes.DATE,
-    allowNull: true,
   },
   brand: {
     type: DataTypes.STRING,
@@ -44,18 +29,22 @@ const Medication = sequelize.define('Medication', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  form: {
-    type: DataTypes.ENUM('tablet', 'liquid', 'injection', 'capsule'),
+  formId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: MedicationForm,
+      key: 'id',
+    },
   },
   storage: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
 });
+
+// Association
+
+Medication.belongsTo(MedicationForm, { foreignKey: 'formId' });
 
 module.exports = Medication;

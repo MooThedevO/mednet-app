@@ -1,0 +1,21 @@
+/api/auth/
+/api/users/
+/api/roles/
+
+### Signup User
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "testuser1991",
+  "email": "testuser1991@example.com",
+  "password": "password123",
+  "fullName": "Test User One",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St",
+  "profilePicture": "https://example.com/profile1.jpg",
+  "roleName": "user"
+}
+###
+
+GET http://localhost:5000/api/users

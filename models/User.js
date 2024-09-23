@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const sequelize = require('./index');
-const Medication = require('./Medication'); // Import Medication model
+const Role = require('./Role'); // Import Role model
 
 const User = sequelize.define('User', {
   username: {
@@ -34,11 +34,27 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  role: {
-    type: DataTypes.ENUM('user', 'pharmacy', 'admin'),
+  roleId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 'user',
+    references: {
+      model: Role,
+      key: 'id',
+    },
   },
+  isVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  isDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  isBlocked: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+
 });
 
 // Hash the password before saving the user
@@ -48,7 +64,7 @@ User.beforeCreate(async (user) => {
 });
 
 // Association
-User.hasMany(Medication, { foreignKey: 'userId' });
-Medication.belongsTo(User, { foreignKey: 'userId' });
+
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
 module.exports = User;
