@@ -14,7 +14,7 @@ exports.getAllRequests = async (req, res) => {
     });
     res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch requests' });
+    res.status(500).json({ error: 'Failed to fetch medication requests', details: error.message });
   }
 };
 
@@ -29,17 +29,23 @@ exports.getRequestById = async (req, res) => {
     }
     res.status(200).json(request);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch request' });
+    res.status(500).json({ error: 'Failed to fetch medication request', details: error.message });
   }
 };
 
 // Add a new medication request
 exports.addRequest = async (req, res) => {
+  const { userId, medicationId, quantity, urgencyId, conditionId, doctorPrescription, isDonation, statusId } = req.body;
+
+  if (!userId || !medicationId || !quantity || !urgencyId || !conditionId || !statusId) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
     const newRequest = await MedicationRequest.create(req.body);
     res.status(201).json(newRequest);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to add request' });
+    res.status(400).json({ error: 'Failed to add medication request', details: error.message });
   }
 };
 
@@ -53,7 +59,7 @@ exports.updateRequest = async (req, res) => {
     await request.update(req.body);
     res.status(200).json(request);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update request' });
+    res.status(400).json({ error: 'Failed to update medication request', details: error.message });
   }
 };
 
@@ -68,6 +74,6 @@ exports.deleteRequest = async (req, res) => {
     await request.save();
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete request' });
+    res.status(500).json({ error: 'Failed to delete medication request', details: error.message });
   }
 };

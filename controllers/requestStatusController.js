@@ -1,4 +1,4 @@
-// controllers/requestStatusController.js
+const { validationResult, body } = require('express-validator');
 const RequestStatus = require('../models/RequestStatus');
 
 // Get all request statuses
@@ -25,7 +25,11 @@ exports.getStatusById = async (req, res) => {
 };
 
 // Add a new request status
-exports.addStatus = async (req, res) => {
+exports.addStatus = [
+  requestStatusValidationRules,
+  async (req, res) => {
+    handleValidationErrors(req, res);
+
     const { status, description } = req.body;
 
     try {
@@ -35,13 +39,18 @@ exports.addStatus = async (req, res) => {
     const newStatus = await RequestStatus.create({ status, description });
     res.status(201).json(newStatus);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to add request status' });
+    res.status(500).json({ error: 'Failed to add request status' });
   }
-};
+}
+];
 
 // Update a request status
-exports.updateStatus = async (req, res) => {
-  try {
+exports.updateStatus = [
+  requestStatusValidationRules,
+  async (req, res) => {
+    handleValidationErrors(req, res);
+
+    try {
     const status = await RequestStatus.findByPk(req.params.statusId);
     if (!status) {
       return res.status(404).json({ error: 'Request status not found' });
@@ -51,7 +60,8 @@ exports.updateStatus = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: 'Failed to update request status' });
   }
-};
+}
+];
 
 // Delete a request status
 exports.deleteStatus = async (req, res) => {
@@ -66,3 +76,21 @@ exports.deleteStatus = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete request status' });
   }
 };
+
+// Helper function to handle validation errors
+const handleValidationErrors = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+};
+
+// Validation rules for adding/updating request statuses
+const requestStatusValidationRules = [
+  body('status')
+    .notEmpty().withMessage('Status is required')
+    .isString().withMessage('Status must be a string'),
+  body('description')
+    .optional()
+    .isString().withMessage('Description must be a string'),
+];

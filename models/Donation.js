@@ -1,4 +1,3 @@
-// models/Donation.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('./index');
 const Medication = require('./Medication');

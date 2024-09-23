@@ -6,7 +6,7 @@ const { authMiddleware, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.get('/', getAllMedications);
-router.get('/:id', getMedicationById);
+router.get('/:medId', getMedicationById);
 
 // Protected routes
 router.post('/', [authMiddleware, authorize(['pharmacy','admin','superadmin'])], addMedication);

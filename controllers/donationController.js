@@ -1,6 +1,5 @@
 // controllers/donationController.js
 const Donation = require('../models/Donation');
-const { validationResult } = require('express-validator');
 const Medication = require('../models/Medication');
 const User = require('../models/User');
 const DonationStatus = require('../models/DonationStatus');
@@ -14,7 +13,7 @@ exports.getAllDonations = async (req, res) => {
     });
     res.status(200).json(donations);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch donations' });
+    res.status(500).json({ error: 'Failed to fetch donations', details: error.message });
   }
 };
 
@@ -29,17 +28,23 @@ exports.getDonationById = async (req, res) => {
     }
     res.status(200).json(donation);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch donation' });
+    res.status(500).json({ error: 'Failed to fetch donation', details: error.message });
   }
 };
 
 // Add a new donation
 exports.addDonation = async (req, res) => {
+  const { userId, medicationId, quantity, statusId, anonymous } = req.body;
+ 
+  if (!userId || !medicationId || !quantity || !statusId || anonymous === undefined) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   try {
     const newDonation = await Donation.create(req.body);
     res.status(201).json(newDonation);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to add request' });
+    res.status(400).json({ error: 'Failed to add donation', details: error.message });
   }
 };
 
@@ -53,7 +58,7 @@ exports.updateDonation = async (req, res) => {
     await donation.update(req.body);
     res.status(200).json(donation);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update donation' });
+    res.status(400).json({ error: 'Failed to update donation', details: error.message });
   }
 };
 
@@ -68,6 +73,6 @@ exports.deleteDonation = async (req, res) => {
     await donation.save();
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete donation' });
+    res.status(500).json({ error: 'Failed to delete donation', details: error.message });
   }
 };

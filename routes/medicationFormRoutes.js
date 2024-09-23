@@ -6,7 +6,7 @@ const { authMiddleware, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.get('/', getAllForms);
-router.get('/:id', getFormById);
+router.get('/:formId', getFormById);
 
 // Protected routes
 router.post('/', [authMiddleware, authorize(['superadmin'])], addForm);

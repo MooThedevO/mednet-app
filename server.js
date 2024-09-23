@@ -18,7 +18,12 @@ const sequelize = require('./models/index');
 
 const initRoles = require('./init/initRoles');
 const initMedForms = require('./init/initMedForms');
-
+const initUsers = require('./init/initUsers');
+const initUrgencyLevels = require('./init/initUrgencyLevels');
+const initRequestStatuses = require('./init/initRequestStatuses');
+const initDonationStatuses = require('./init/initDonationStatuses');
+const initMedSeverity = require('./init/initMedSeverity');
+const initMedConditions = require('./init/initMedConditions');
 const errorMiddleware = require('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -49,9 +54,16 @@ sequelize.sync().then(() => {
   console.log('Database connected!');
 
    // Call the initialization functions
+   initUsers();
    initMedForms();
    initRoles();
-
+   initUrgencyLevels();
+   initRequestStatuses();
+   initDonationStatuses();
+   initMedSeverity();
+   initMedConditions();
+   
+   // Start server
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }).catch((err) => {
