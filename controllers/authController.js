@@ -5,6 +5,9 @@ const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { check, validationResult } = require('express-validator');
 
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
 require('dotenv').config();
 
 // User signup (non-admin)
@@ -55,6 +58,20 @@ exports.signup = [
           profilePicture,
           roleId: role.id
       });
+
+    // Generate verification token
+    const token = generateVerificationToken();
+    
+    // Create the new user with the verification token
+    const newUser = await User.create({
+      name,
+      email,
+      password, // Assuming you've hashed it beforehand
+      verificationToken: token
+    });
+    
+    // Send the verification email
+    await sendVerificationEmail(email, token);
 
       res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
@@ -109,6 +126,20 @@ exports.adminSignup = [
         roleId: role.id
     });
 
+    // Generate verification token
+    const token = generateVerificationToken();
+    
+    // Create the new user with the verification token
+    const newUser = await User.create({
+      name,
+      email,
+      password, // Assuming you've hashed it beforehand
+      verificationToken: token
+    });
+    
+    // Send the verification email
+    await sendVerificationEmail(email, token);
+
     res.status(201).json({ message: 'Admin registered successfully', user });
     } catch (error) {
     res.status(500).json({ error: 'Error registering admin', details: error.message });
@@ -128,6 +159,11 @@ exports.login = async (req, res) => {
       });
 
       if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+          // Check if the email is verified
+    if (!user.isVerified) {
+      return res.status(400).json({ message: 'Please verify your email before logging in' });
+    }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ error: 'Invalid password' });
@@ -234,5 +270,50 @@ exports.blockUser = async (req, res) => {
       res.status(200).json({ message: `User ${user.isBlocked ? 'blocked' : 'unblocked'} successfully` });
     } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+// Function to generate a unique token
+function generateVerificationToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+// Function to send a verification email
+async function sendVerificationEmail(email, token) {
+  const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Use your email service
+    auth: {
+      user: process.env.EMAIL_USER, // Your email address
+      pass: process.env.EMAIL_PASSWORD // Your email password or app password
+    }
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Please verify your email',
+    html: `<p>Thank you for registering! Please verify your email by clicking on the link below:</p>
+           <a href="http://localhost:3000/verify-email?token=${token}">Verify Email</a>`
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+// Email verification route
+exports.verifyMail = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    // Find the user with the matching verification token
+    const user = await User.findOne({ where: { verificationToken: token } });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired verification token' });
+
+    // Update the user to set emailVerified to true and remove the token
+    user.emailVerified = true;
+    user.verificationToken = null;
+    await user.save();
+
+    res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to verify email', error });
   }
 };

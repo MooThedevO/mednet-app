@@ -42,6 +42,10 @@ const User = sequelize.define('User', {
       key: 'id',
     },
   },
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },  
   isVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

@@ -6,7 +6,8 @@ const {
     updateEmailOrPassword, 
     deleteUser, 
     blockUser,
-    updatePassword
+    updatePassword,
+    verifyMail
   } = require('../controllers/authController');
 const { authMiddleware, authorize, authorizeSelf } = require('../middleware/authMiddleware');
 
@@ -22,5 +23,6 @@ router.put('/user/:userId/update-email-password', [authMiddleware, authorizeSelf
 router.delete('/user/:userId/delete', [authMiddleware, authorizeSelf()], deleteUser);
 router.put('/user/:userId/block', [authMiddleware, authorize(['admin', 'superadmin'])], blockUser);
 router.put('/user/:userId/update-password', [authMiddleware, authorizeSelf()], updatePassword)
+router.get('/verify-email',verifyMail);
 
 module.exports = router;

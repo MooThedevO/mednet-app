@@ -13,5 +13,4 @@ router.post('/', [authMiddleware, authorize(['pharmacy','admin','superadmin'])],
 router.put('/:medId', [authMiddleware, authorize(['admin','superadmin'])], updateMedication);
 router.delete('/:medId', [authMiddleware, authorize([,'admin','superadmin'])], deleteMedication);
 
-
 module.exports = router;
