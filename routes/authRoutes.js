@@ -16,6 +16,7 @@ const router = express.Router();
 // Public routes
 router.post('/signup', signup);
 router.post('/login', login);
+router.get('/verify-email',verifyMail);
 
 // Protected routes (admin/superadmin access)
 router.post('/admin/signup', [authMiddleware, authorize(['superadmin'])], adminSignup);
@@ -23,6 +24,5 @@ router.put('/user/:userId/update-email-password', [authMiddleware, authorizeSelf
 router.delete('/user/:userId/delete', [authMiddleware, authorizeSelf()], deleteUser);
 router.put('/user/:userId/block', [authMiddleware, authorize(['admin', 'superadmin'])], blockUser);
 router.put('/user/:userId/update-password', [authMiddleware, authorizeSelf()], updatePassword)
-router.get('/verify-email',verifyMail);
 
 module.exports = router;

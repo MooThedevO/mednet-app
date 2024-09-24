@@ -1,6 +1,24 @@
 const { validationResult, body } = require('express-validator');
 const RequestStatus = require('../models/RequestStatus');
 
+// Helper function to handle validation errors
+const handleValidationErrors = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+};
+
+// Validation rules for adding/updating request statuses
+const requestStatusValidationRules = [
+  body('status')
+    .notEmpty().withMessage('Status is required')
+    .isString().withMessage('Status must be a string'),
+  body('description')
+    .optional()
+    .isString().withMessage('Description must be a string'),
+];
+
 // Get all request statuses
 exports.getAllStatuses = async (req, res) => {
   try {
@@ -76,21 +94,3 @@ exports.deleteStatus = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete request status' });
   }
 };
-
-// Helper function to handle validation errors
-const handleValidationErrors = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-};
-
-// Validation rules for adding/updating request statuses
-const requestStatusValidationRules = [
-  body('status')
-    .notEmpty().withMessage('Status is required')
-    .isString().withMessage('Status must be a string'),
-  body('description')
-    .optional()
-    .isString().withMessage('Description must be a string'),
-];

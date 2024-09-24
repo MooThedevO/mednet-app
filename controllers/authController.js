@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Role = require('../models/Role');
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
@@ -62,19 +63,15 @@ exports.signup = [
     // Generate verification token
     const token = generateVerificationToken();
     
-    // Create the new user with the verification token
-    const newUser = await User.create({
-      name,
-      email,
-      password, // Assuming you've hashed it beforehand
-      verificationToken: token
-    });
-    
-    // Send the verification email
-    await sendVerificationEmail(email, token);
+      // Save the token in the user record
+      user.verificationToken = token;
+      await user.save();
 
-      res.status(201).json({ message: 'User registered successfully', user });
-  } catch (error) {
+      // Send the verification email
+      await sendVerificationEmail(email, token);
+
+      res.status(201).json({ message: 'User registered successfully. Please verify your email.', user });
+    } catch (error) {
     res.status(500).json({ error: 'Error registering user', details: error.message });
   }
 }];
@@ -129,29 +126,35 @@ exports.adminSignup = [
     // Generate verification token
     const token = generateVerificationToken();
     
-    // Create the new user with the verification token
-    const newUser = await User.create({
-      name,
-      email,
-      password, // Assuming you've hashed it beforehand
-      verificationToken: token
-    });
+      // Save the token in the user record
+      user.verificationToken = token;
+      await user.save();
     
     // Send the verification email
     await sendVerificationEmail(email, token);
 
-    res.status(201).json({ message: 'Admin registered successfully', user });
-    } catch (error) {
+    res.status(201).json({ message: 'Admin registered successfully. Please verify the email.', user });
+  } catch (error) {
     res.status(500).json({ error: 'Error registering admin', details: error.message });
     }
   }
 ];
 
 //login
-exports.login = async (req, res) => {
-  const { emailOrUsername, password } = req.body;
+exports.login = [
+  // Validation
+  check('emailOrUsername').notEmpty().withMessage('Email or Username is required'),
+  check('password').notEmpty().withMessage('Password is required'),
+  
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
 
-  try {
+    const { emailOrUsername, password } = req.body;
+
+    try {
       const user = await User.findOne({
           where: {
               [Op.or]: [{ email: emailOrUsername }, { username: emailOrUsername }]
@@ -170,61 +173,84 @@ exports.login = async (req, res) => {
 
       const token = jwt.sign({ id: user.id, roleId: user.roleId }, process.env.SECRET_KEY, { expiresIn: '1h' });
       res.status(200).json({ token });
-  } catch (error) {
+    } catch (error) {
       res.status(500).json({ error: 'Server error', details: error.message });
+    }
   }
-};
+];
 
 // Update user's password
-exports.updatePassword = async (req, res) => {
-  const { userId } = req.params.userId;
-  const { currentPassword, newPassword } = req.body;
+exports.updatePassword =  [
+    // Validation
+    check('currentPassword').notEmpty().withMessage('Current password is required'),
+    check('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
 
-  if (!newPassword || newPassword.length < 6) {
-      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
-  }
-
-  try {
-      const user = await User.findByPk(userId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
-
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-          return res.status(400).json({ error: 'Incorrect current password' });
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
       }
 
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedNewPassword;
-      await user.save();
+      const { userId } = req.params.userId;
+      const { currentPassword, newPassword } = req.body;
 
-      res.status(200).json({ message: 'Password updated successfully' });
-  } catch (error) {
-      res.status(500).json({ error: 'Error updating password', details: error.message });
-  }
-};
+      if (!newPassword || newPassword.length < 6) {
+          return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+      }
+
+      try {
+          const user = await User.findByPk(userId);
+          if (!user) return res.status(404).json({ message: 'User not found' });
+
+          const isMatch = await bcrypt.compare(currentPassword, user.password);
+          if (!isMatch) {
+              return res.status(400).json({ error: 'Incorrect current password' });
+          }
+
+          const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+          user.password = hashedNewPassword;
+          await user.save();
+
+          res.status(200).json({ message: 'Password updated successfully' });
+      } catch (error) {
+          res.status(500).json({ error: 'Error updating password', details: error.message });
+      }
+    }
+];
 
 // Update Email or Password (Admin/User)
-exports.updateEmailOrPassword = async (req, res) => {
-  const { userId } = req.params.userId;
-  const { oldPassword, newPassword, newEmail } = req.body;
-  const requestingUser = req.user; // User from the authMiddleware
+exports.updateEmailOrPassword = [
+  // Validation
+  check('oldPassword').notEmpty().withMessage('Old password is required'),
+  check('newPassword').optional().isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
+  check('newEmail').optional().isEmail().withMessage('Must be a valid email'),
 
-  try {
-      const user = await User.findByPk(userId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
 
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch) return res.status(400).json({ message: 'Incorrect old password' });
+    const { userId } = req.params.userId;
+    const { oldPassword, newPassword, newEmail } = req.body;
 
-      if (newPassword) user.password = await bcrypt.hash(newPassword, 10);
-      if (newEmail) user.email = newEmail;
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-      await user.save();
-      res.status(200).json({ message: 'User updated successfully', user });
-  } catch (err) {
-      res.status(500).json({ message: 'Server error', error: err.message });
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Incorrect old password' });
+
+        if (newPassword) user.password = await bcrypt.hash(newPassword, 10);
+        if (newEmail) user.email = newEmail;
+
+        await user.save();
+        res.status(200).json({ message: 'User updated successfully', user });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
   }
-};
+];
 
 // Delete User
 exports.deleteUser = async (req, res) => {
@@ -292,7 +318,7 @@ async function sendVerificationEmail(email, token) {
     to: email,
     subject: 'Please verify your email',
     html: `<p>Thank you for registering! Please verify your email by clicking on the link below:</p>
-           <a href="http://localhost:3000/verify-email?token=${token}">Verify Email</a>`
+           <a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>`
   };
 
   await transporter.sendMail(mailOptions);
@@ -302,13 +328,12 @@ async function sendVerificationEmail(email, token) {
 exports.verifyMail = async (req, res) => {
   try {
     const { token } = req.query;
-
     // Find the user with the matching verification token
     const user = await User.findOne({ where: { verificationToken: token } });
     if (!user) return res.status(400).json({ message: 'Invalid or expired verification token' });
 
     // Update the user to set emailVerified to true and remove the token
-    user.emailVerified = true;
+    user.isVerified = true;
     user.verificationToken = null;
     await user.save();
 

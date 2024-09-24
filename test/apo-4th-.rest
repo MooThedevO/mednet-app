@@ -1,0 +1,59 @@
+### Signup User
+POST http://localhost:5000/api/auth/signup
+Content-Type: application/json
+
+{
+    "email": "mhsaleh1991@gmail.com",
+    "password": "password12243",
+    "username": "testuseeer12",
+    "fullName": "Test User twwwo",
+    "phoneNumber": "+12345678488490",
+    "address": "123 Test two",
+    "profilePicture": "profissflepisc.jpg",
+    "roleName": "user"
+}
+
+### Login User
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+    "emailOrUsername": "testuseeer12",
+    "password": "password12243"
+}
+
+### Verify Email (Assuming token is received from signup)
+GET http://localhost:3000/api/auth/verify-email?token=your_verification_token
+
+### Update Password (Requires JWT token in header)
+PUT http://localhost:3000/api/auth/update-password/1
+Content-Type: application/json
+Authorization: Bearer your_jwt_token
+
+{
+    "currentPassword": "password123",
+    "newPassword": "newpassword123"
+}
+
+### Update Email or Password (Requires JWT token in header)
+PUT http://localhost:3000/api/auth/update-email-password/1
+Content-Type: application/json
+Authorization: Bearer your_jwt_token
+
+{
+    "oldPassword": "password123",
+    "newEmail": "newemail@example.com",
+    "newPassword": "newpassword123"
+}
+
+### Delete User (Admin only)
+DELETE http://localhost:3000/api/auth/delete-user/1
+Content-Type: application/json
+Authorization: Bearer admin_jwt_token
+
+### Block User (Admin only)
+PUT http://localhost:3000/api/auth/block-user/1
+Content-Type: application/json
+Authorization: Bearer admin_jwt_token
+###
+GET http://localhost:5000/api/users

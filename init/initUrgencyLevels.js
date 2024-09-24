@@ -2,7 +2,7 @@ const UrgencyLevel = require('../models/UrgencyLevel');
 
 const initUrgencyLevels = async () => {
   try {
-    await Role.urgencyLevels([
+    await UrgencyLevel.bulkCreate([
         { level: 'Low', description: 'Can wait for a longer period' },
         { level: 'Medium', description: 'Needs attention but not critical' },
         { level: 'High', description: 'Requires immediate action' }

@@ -1,5 +1,23 @@
 const UrgencyLevel = require('../models/UrgencyLevel');
-const { validationResult } = require('express-validator');
+const { validationResult, body } = require('express-validator');
+
+
+// Helper function to handle validation errors
+const handleValidationErrors = (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+};
+
+const urgencyValidationRules = [
+  body('level')
+    .notEmpty().withMessage('Level is required')
+    .isString().withMessage('Level must be a string'),
+  body('description')
+    .optional()
+    .isString().withMessage('Description must be a string'),
+];
 
 // Get all urgency levels
 exports.getAllUrgencyLevels = async (req, res) => {
@@ -78,20 +96,3 @@ exports.deleteUrgencyLevel = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete urgency level' });
   }
 };
-
-// Helper function to handle validation errors
-const handleValidationErrors = (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-};
-
-const urgencyValidationRules = [
-  body('level')
-    .notEmpty().withMessage('Level is required')
-    .isString().withMessage('Level must be a string'),
-  body('description')
-    .optional()
-    .isString().withMessage('Description must be a string'),
-];

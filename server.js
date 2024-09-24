@@ -54,14 +54,16 @@ sequelize.sync().then(() => {
   console.log('Database connected!');
 
    // Call the initialization functions
-   initUsers();
-   initMedForms();
    initRoles();
+   initUsers();
+
+   initMedForms();
    initUrgencyLevels();
-   initRequestStatuses();
-   initDonationStatuses();
    initMedSeverity();
    initMedConditions();
+   
+   initRequestStatuses();
+   initDonationStatuses();
    
    // Start server
   const PORT = process.env.PORT || 5000;
