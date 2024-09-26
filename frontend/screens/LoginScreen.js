@@ -1,17 +1,45 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Card, Title } from 'react-native-paper';
+import React, { useState, useContext, useEffect } from 'react';
+import { View } from 'react-native';
+import { TextInput, Button, Card, Title, Text } from 'react-native-paper';
 import { UserContext } from '../context/UserContext';
+import api from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/loginStyles';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { setUser } = useContext(UserContext);
 
-  const handleLogin = () => {
-    setUser({ email });
-    navigation.navigate('HomeTabs'); // Navigate to HomeTabs after login
+  useEffect(() => {
+    // Clear fields and error message whenever the screen is opened
+    const unsubscribe = navigation.addListener('focus', () => {
+      setEmail('');
+      setPassword('');
+      setError('');
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleLogin = async () => {
+    try {
+      const response = await api.post('/api/auth/login', { emailOrUsername, password });
+
+      const { token, user } = response.data;
+
+      // Store token securely in AsyncStorage
+      await AsyncStorage.setItem('userToken', token);
+      
+      // Update UserContext
+      setUser(user);
+
+      // Navigate to HomeTabs
+      navigation.navigate('HomeTabs');
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Error: Login failed';
+      setError(errorMsg);
+    }
   };
 
   return (
@@ -20,8 +48,8 @@ const LoginScreen = ({ navigation }) => {
         <Card.Content>
           <Title>Login</Title>
           <TextInput
-            label="Email"
-            value={email}
+            label="Email or Username"
+            value={emailOrUsername}
             onChangeText={setEmail}
             style={styles.input}
           />
@@ -34,6 +62,9 @@ const LoginScreen = ({ navigation }) => {
           />
         </Card.Content>
       </Card>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
       <Button mode="contained" onPress={handleLogin} style={styles.button}>
         Login
       </Button>

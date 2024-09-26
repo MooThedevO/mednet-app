@@ -149,7 +149,7 @@ exports.login = [
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array().map(error => error.msg) });
     }
 
     const { emailOrUsername, password } = req.body;
@@ -161,20 +161,27 @@ exports.login = [
           }
       });
 
-      if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+      if (!user) {
+        return res.status(400).json({ message: 'No user found with the provided credentials' });
+      }
 
           // Check if the email is verified
-    if (!user.isVerified) {
-      return res.status(400).json({ message: 'Please verify your email before logging in' });
-    }
+    // if (!user.isVerified) {
+    //   return res.status(400).json({ message: 'Please verify your email before logging in' });
+    // }
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ error: 'Invalid password' });
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid password' });
+      }
 
       const token = jwt.sign({ id: user.id, roleId: user.roleId }, process.env.SECRET_KEY, { expiresIn: '1h' });
-      res.status(200).json({ token });
+
+      const { password: _, ...userWithoutPassword } = user.toJSON();
+
+      res.status(200).json({ token, user: userWithoutPassword });
     } catch (error) {
-      res.status(500).json({ error: 'Server error', details: error.message });
+      res.status(500).json({ message: 'Server error', error: error.message });
     }
   }
 ];
