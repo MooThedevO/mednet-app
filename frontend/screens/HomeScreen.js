@@ -1,42 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Button } from 'react-native';
-import api from '../services/api';  // Import your API service
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Button, Card, Text, Title } from 'react-native-paper';
+import styles from '../styles/homeStyles';  // Import styles
 
 const HomeScreen = ({ navigation }) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get('/api/users');
-        setData(response.data);  // Update state with fetched data
-        setLoading(false);  // Set loading to false
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   return (
-    <View style={{ padding: 20 }}>
-      <Text>Home Screen</Text>
-
-      {/* Show data if available */}
-      <Text>{data ? JSON.stringify(data) : 'No data available'}</Text>
-
-      {/* Button to navigate to Details screen */}
+    <View style={styles.container}>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title>Welcome to MedNet</Title>
+          <Text>Find the medicines you need or donate unused medicines.</Text>
+        </Card.Content>
+      </Card>
       <Button
-        title="Go to Details"
+        mode="contained"
+        style={styles.button}
         onPress={() => navigation.navigate('Details')}
-      />
+      >
+        Go to Details
+      </Button>
     </View>
   );
 };
