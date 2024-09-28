@@ -23,17 +23,16 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
   },
-  button: {
-    width: '80%',
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+  buttonText: {
+    color: '#007BFF',
+    fontWeight: 'bold',
     marginVertical: 10,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 10,
   },
   errorText: {
     color: 'red',

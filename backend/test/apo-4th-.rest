@@ -18,8 +18,8 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-    "emailOrUsername": "testuseeer12",
-    "password": "password12243"
+    "emailOrUsername": "user1",
+    "password": "password123"
 }
 
 ### Verify Email (Assuming token is received from signup)

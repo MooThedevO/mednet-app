@@ -1,58 +1,47 @@
-import React from 'react';
+import React, { useContext } from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Provider as PaperProvider } from 'react-native-paper';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { UserProvider } from './context/UserContext';
+import { UserProvider, UserContext } from './context/UserContext';
 
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignupScreen';
+import EmailVerificationScreen from './screens/EmailVerificationScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import LoginScreen from './screens/LoginScreen';
-import DetailsScreen from './screens/DetailsScreen';
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator(); 
+// Stack Navigator for Login, Signup, and Email Verification
+const AuthStack = createStackNavigator();
+const AuthStackScreen = () => (
+  <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+    <AuthStack.Screen name="Login" component={LoginScreen} />
+    <AuthStack.Screen name="Signup" component={SignupScreen} />
+    <AuthStack.Screen name="EmailVerification" component={EmailVerificationScreen} />
+  </AuthStack.Navigator>
+);
 
-function HomeTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === 'Home') {
-            iconName = 'home-outline';  // Updated icon name
-          } else if (route.name === 'Profile') {
-            iconName = 'person-outline';  // Updated icon name
-          }
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          display: 'flex',
-        },
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
-}
+// Drawer Navigator for Home, Profile, and other screens
+const Drawer = createDrawerNavigator();
+const DrawerScreen = () => (
+  <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Screen name="Home" component={HomeScreen} />
+    <Drawer.Screen name="Profile" component={ProfileScreen} />
+  </Drawer.Navigator>
+);
 
-export default function App() {
+const App = () => {
+  const user = useContext(UserContext); // Get user context
+
   return (
     <UserProvider>
-      <PaperProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login">
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="HomeTabs" component={HomeTabs} />
-            <Stack.Screen name="Details" component={DetailsScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
+      <NavigationContainer>
+        {/* Conditionally show AuthStack if user is not authenticated */}
+        {user ? <DrawerScreen /> : <AuthStackScreen />}
+      </NavigationContainer>
     </UserProvider>
   );
-}
+};
+
+export default App;

@@ -1,73 +1,63 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View } from 'react-native';
-import { TextInput, Button, Card, Title, Text } from 'react-native-paper';
+import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
 import { UserContext } from '../context/UserContext';
 import api from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/loginStyles';
 
 const LoginScreen = ({ navigation }) => {
-  const [emailOrUsername, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { setUser } = useContext(UserContext);
 
+  // Clear data and errors on screen load
   useEffect(() => {
-    // Clear fields and error message whenever the screen is opened
-    const unsubscribe = navigation.addListener('focus', () => {
-      setEmail('');
-      setPassword('');
-      setError('');
-    });
-    return unsubscribe;
-  }, [navigation]);
+    setEmailOrUsername('');
+    setPassword('');
+    setError('');
+  }, []);
 
   const handleLogin = async () => {
     try {
-      const response = await api.post('/api/auth/login', { emailOrUsername, password });
-
-      const { token, user } = response.data;
-
-      // Store token securely in AsyncStorage
-      await AsyncStorage.setItem('userToken', token);
-      
-      // Update UserContext
-      setUser(user);
-
-      // Navigate to HomeTabs
-      navigation.navigate('HomeTabs');
+      const response = await api.login({ emailOrUsername, password });
+      if (response.data.token) {
+        setUser(response.data.user);
+        navigation.navigate('HomeTabs');
+      } else {
+        setError(response.data.message || 'Login failed');
+      }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Error: Login failed';
-      setError(errorMsg);
+      setError(err.response?.data?.message || 'Login error');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Login</Title>
-          <TextInput
-            label="Email or Username"
-            value={emailOrUsername}
-            onChangeText={setEmail}
-            style={styles.input}
-          />
-          <TextInput
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.input}
-          />
-        </Card.Content>
-      </Card>
+      <Text style={styles.header}>Login</Text>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      <Button mode="contained" onPress={handleLogin} style={styles.button}>
-        Login
-      </Button>
+      <TextInput
+        placeholder="Email or Username"
+        value={emailOrUsername}
+        onChangeText={setEmailOrUsername}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+        <Text>Don't have an account? Signup here</Text>
+      </TouchableOpacity>
     </View>
   );
 };

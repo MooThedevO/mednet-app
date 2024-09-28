@@ -25,6 +25,7 @@ exports.signup = [
         if (role.name === 'admin' || role.name === 'superadmin') {
             throw new Error('Cannot assign admin or superadmin roles through this route');
         }
+        req.role = role; 
     }),
     
     async (req, res) => {
@@ -47,7 +48,6 @@ exports.signup = [
         }
 
         // Fetch role from the database dynamically
-        const role = await Role.findOne({ where: { name: roleName } });
 
         const user = await User.create({
           username,
@@ -57,7 +57,7 @@ exports.signup = [
           phoneNumber,
           address,
           profilePicture,
-          roleId: role.id
+          roleId: req.role.id
       });
 
     // Generate verification token
@@ -89,6 +89,7 @@ exports.adminSignup = [
       if (role.name !== 'admin' && role.name !== 'superadmin') {
           throw new Error('Only admin or superadmin roles can be assigned via this route');
       }
+      req.role = role;
   }),
 
   async (req, res) => {
@@ -110,8 +111,6 @@ exports.adminSignup = [
         return res.status(400).json({ error: 'Email or username already in use' });
     }
 
-    const role = await Role.findOne({ where: { name: roleName } });
-
     const user = await User.create({
         username,
         email,
@@ -120,7 +119,7 @@ exports.adminSignup = [
         phoneNumber,
         address,
         profilePicture,
-        roleId: role.id
+        roleId: req.role.id
     });
 
     // Generate verification token
@@ -162,17 +161,17 @@ exports.login = [
       });
 
       if (!user) {
-        return res.status(400).json({ message: 'No user found with the provided credentials' });
+        return res.status(404).json({ message: 'No user found with the provided credentials' });
       }
 
           // Check if the email is verified
-    // if (!user.isVerified) {
-    //   return res.status(400).json({ message: 'Please verify your email before logging in' });
-    // }
+    if (!user.isVerified) {
+      return res.status(401).json({ message: 'Please verify your email before logging in' });
+    }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid password' });
+        return res.status(400).json({ message: 'Invalid credentials' });
       }
 
       const token = jwt.sign({ id: user.id, roleId: user.roleId }, process.env.SECRET_KEY, { expiresIn: '1h' });
@@ -324,7 +323,7 @@ async function sendVerificationEmail(email, token) {
     from: process.env.EMAIL_USER,
     to: email,
     subject: 'Please verify your email',
-    html: `<p>Thank you for registering! Please verify your email by clicking on the link below:</p>
+    html: `<p>Thank you for registering! Please verify your email by entering code ${token} or clicking on the link below:</p>
            <a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>`
   };
 
@@ -337,7 +336,7 @@ exports.verifyMail = async (req, res) => {
     const { token } = req.query;
     // Find the user with the matching verification token
     const user = await User.findOne({ where: { verificationToken: token } });
-    if (!user) return res.status(400).json({ message: 'Invalid or expired verification token' });
+    if (!user) return res.status(404).json({ message: 'Invalid or expired verification token' });
 
     // Update the user to set emailVerified to true and remove the token
     user.isVerified = true;
@@ -346,6 +345,6 @@ exports.verifyMail = async (req, res) => {
 
     res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to verify email', error });
+    res.status(400).json({ message: 'Failed to verify email', error });
   }
 };

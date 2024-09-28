@@ -1,24 +1,11 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Card, Text, Title } from 'react-native-paper';
-import styles from '../styles/homeStyles';  // Import styles
+import { View, Text } from 'react-native';
+import styles from '../styles/homeStyles';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Welcome to MedNet</Title>
-          <Text>Find the medicines you need or donate unused medicines.</Text>
-        </Card.Content>
-      </Card>
-      <Button
-        mode="contained"
-        style={styles.button}
-        onPress={() => navigation.navigate('Details')}
-      >
-        Go to Details
-      </Button>
+      <Text style={styles.header}>Home</Text>
     </View>
   );
 };
