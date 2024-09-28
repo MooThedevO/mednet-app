@@ -1,11 +1,8 @@
 import React, { useContext } from 'react';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import { UserProvider, UserContext } from './context/UserContext';
-
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import EmailVerificationScreen from './screens/EmailVerificationScreen';
@@ -31,17 +28,21 @@ const DrawerScreen = () => (
   </Drawer.Navigator>
 );
 
-const App = () => {
-  const user = useContext(UserContext); // Get user context
+const AppContent = () => {
+  const { user } = useContext(UserContext); // Ensuring that UserContext is accessed properly
 
+  // Conditionally render based on whether the user is logged in
   return (
-    <UserProvider>
-      <NavigationContainer>
-        {/* Conditionally show AuthStack if user is not authenticated */}
-        {user ? <DrawerScreen /> : <AuthStackScreen />}
-      </NavigationContainer>
-    </UserProvider>
+    <NavigationContainer>
+      {user ? <DrawerScreen /> : <AuthStackScreen />}
+    </NavigationContainer>
   );
 };
+
+const App = () => (
+  <UserProvider>
+    <AppContent />
+  </UserProvider>
+);
 
 export default App;

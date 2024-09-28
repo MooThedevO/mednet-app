@@ -1,14 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../context/UserContext';
 import api from '../services/api';
 import styles from '../styles/loginStyles';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { setUser } = useContext(UserContext);
+
+  const navigation = useNavigation();
 
   // Clear data and errors on screen load
   useEffect(() => {
@@ -22,7 +25,7 @@ const LoginScreen = ({ navigation }) => {
       const response = await api.login({ emailOrUsername, password });
       if (response.data.token) {
         setUser(response.data.user);
-        navigation.navigate('HomeTabs');
+        navigation.reset('Home');
       } else {
         setError(response.data.message || 'Login failed');
       }

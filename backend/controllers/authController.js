@@ -25,13 +25,13 @@ exports.signup = [
         if (role.name === 'admin' || role.name === 'superadmin') {
             throw new Error('Cannot assign admin or superadmin roles through this route');
         }
-        req.role = role; 
     }),
     
     async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ errors: errors.array().map(error => error.msg) });
+            
       }
 
       const { username, email, password, fullName, phoneNumber, address, profilePicture, roleName } = req.body;
@@ -48,6 +48,7 @@ exports.signup = [
         }
 
         // Fetch role from the database dynamically
+        const role = await Role.findOne({ where: { name: roleName } });
 
         const user = await User.create({
           username,
@@ -57,7 +58,7 @@ exports.signup = [
           phoneNumber,
           address,
           profilePicture,
-          roleId: req.role.id
+          roleId: role.id
       });
 
     // Generate verification token
@@ -89,13 +90,12 @@ exports.adminSignup = [
       if (role.name !== 'admin' && role.name !== 'superadmin') {
           throw new Error('Only admin or superadmin roles can be assigned via this route');
       }
-      req.role = role;
   }),
 
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array().map(error => error.msg) });
     }
 
     const { username, email, password, fullName, phoneNumber, address, profilePicture, roleName } = req.body;
@@ -110,6 +110,7 @@ exports.adminSignup = [
     if (existingUser || existingUsername) {
         return res.status(400).json({ error: 'Email or username already in use' });
     }
+    const role = await Role.findOne({ where: { name: roleName } });
 
     const user = await User.create({
         username,
@@ -119,7 +120,7 @@ exports.adminSignup = [
         phoneNumber,
         address,
         profilePicture,
-        roleId: req.role.id
+        roleId: role.id
     });
 
     // Generate verification token

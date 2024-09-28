@@ -60,11 +60,12 @@ const SignupScreen = ({ navigation }) => {
         profilePicture, // Send profile picture URI
       };
       const response = await api.signup(userData);
+
       if (response.data.user) {
         setUser(response.data.user);
         navigation.navigate('EmailVerification');
       } else {
-        setError(response.data.error || 'Signup failed');
+        setError(response.data.message || 'Signup failed');
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Signup error');
