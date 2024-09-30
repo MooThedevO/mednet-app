@@ -156,9 +156,11 @@ exports.login = [
 
     try {
       const user = await User.findOne({
-          where: {
-              [Op.or]: [{ email: emailOrUsername }, { username: emailOrUsername }]
-          }
+        where: {
+          [Op.or]: [{ email: emailOrUsername }, { username: emailOrUsername }],
+          isDeleted: false
+        },
+        include: [Role]
       });
 
       if (!user) {
@@ -198,7 +200,7 @@ exports.updatePassword =  [
           return res.status(400).json({ errors: errors.array() });
       }
 
-      const { userId } = req.params.userId;
+      const { userId } = req.params;
       const { currentPassword, newPassword } = req.body;
 
       if (!newPassword || newPassword.length < 6) {
@@ -238,7 +240,7 @@ exports.updateEmailOrPassword = [
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId } = req.params.userId;
+    const { userId } = req.params;
     const { oldPassword, newPassword, newEmail } = req.body;
 
     try {
@@ -261,7 +263,7 @@ exports.updateEmailOrPassword = [
 
 // Delete User
 exports.deleteUser = async (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
 
   try {
       const user = await User.findByPk(userId);
@@ -278,7 +280,7 @@ exports.deleteUser = async (req, res) => {
 
 // block/UnBlock User
 exports.blockUser = async (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
   const requestingUser = req.user;
 
   try {

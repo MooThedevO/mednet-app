@@ -62,7 +62,7 @@ const SignupScreen = ({ navigation }) => {
       const response = await api.signup(userData);
 
       if (response.data.user) {
-        setUser(response.data.user);
+        // setUser(response.data.user);
         navigation.navigate('EmailVerification');
       } else {
         setError(response.data.message || 'Signup failed');

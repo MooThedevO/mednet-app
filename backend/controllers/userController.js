@@ -15,8 +15,7 @@ exports.getAllUsers = async (req, res) => {
 
 // Get specific user by ID
 exports.getUserProfile = async (req, res) => {
-  const { userId } = req.params.userId;
-
+  const { userId } = req.params;
   try {
     const user = await User.findByPk(userId, { include: [Role] });
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -29,7 +28,7 @@ exports.getUserProfile = async (req, res) => {
 
 // Update profile info (not email, password, role, or username)
 exports.updateUserProfile = async (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
   const { fullName, phoneNumber, address, profilePicture, password } = req.body;
 
   try {
@@ -86,7 +85,7 @@ exports.getDeletedUsers = async (req, res) => {
 
 // Change user's role
 exports.changeRole = async (req, res) => {
-  const { userId } = req.params.userId;
+  const { userId } = req.params;
   const { newRoleName } = req.body;
 
   try {

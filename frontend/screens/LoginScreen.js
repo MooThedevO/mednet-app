@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../context/UserContext';
 import api from '../services/api';
@@ -24,6 +25,7 @@ const LoginScreen = () => {
     try {
       const response = await api.login({ emailOrUsername, password });
       if (response.data.token) {
+        await AsyncStorage.setItem('authToken', response.data.token);
         setUser(response.data.user);
         navigation.reset('Home');
       } else {
