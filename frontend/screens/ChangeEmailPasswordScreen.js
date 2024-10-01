@@ -1,90 +1,89 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Button, Modal, Alert } from 'react-native';
-import { UserContext } from '../context/UserContext';
-import { updateEmailOrPassword } from '../services/api'; // API call function
-import styles from '../styles/changeEmailPasswordStyles'; // Assuming styles are imported
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, TextInput, Button, Alert, Modal, Text } from 'react-native';
 
-const ChangeEmailPasswordScreen = () => {
+import { UserContext } from '../context/UserContext';
+import { updateEmailOrPassword } from '../services/api';
+
+import styles from '../styles/changeEmailPasswordStyles';
+
+const ChangeEmailPasswordScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
-  const navigation = useNavigation(); // For navigating to ProfileScreen
   const [email, setEmail] = useState(user.email);
   const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [isOldPasswordModalVisible, setOldPasswordModalVisible] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
-  const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
 
-  // Clear inputs when screen loads
   useEffect(() => {
-    setEmail(user.email);
-    setNewPassword('');
-    setOldPassword('');
+    setEmail(user.email); // Pre-fill email
   }, [user]);
 
-  const handleUpdate = async () => {
-    if (!email || !oldPassword) {
-      Alert.alert('Error', 'Please fill all required fields');
+  const handleSubmit = async () => {
+    if (!newPassword || newPassword !== confirmNewPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
-
-    const data = { oldPassword, newEmail: email, newPassword };
-
-    try {
-      await updateEmailOrPassword(user.id, data);
-      Alert.alert('Success', 'Your email and/or password have been updated');
-      navigation.navigate('Profile'); // Navigate back to Profile on success
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', error.message || 'Failed to update details');
-    }
+    setOldPasswordModalVisible(true); // Trigger modal for old password input
   };
 
-  const confirmUpdate = () => {
-    setPasswordModalVisible(true); // Show the modal asking for old password
+  const confirmUpdate = async () => {
+    if (!oldPassword) {
+      Alert.alert('Error', 'Please enter your current password');
+      return;
+    }
+    setOldPasswordModalVisible(false);
+    const data = {
+      oldPassword,
+      newPassword,
+      email,
+    };
+
+    try {
+      // Correct API call with user.id and data object
+      await updateEmailOrPassword(user.id, data);
+      Alert.alert('Success', 'Email and password updated successfully');
+      navigation.goBack(); // Navigate back to the previous screen
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update email or password');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Title and Back Button */}
-      <View style={styles.header}>
-        <Button title="Back" onPress={() => navigation.goBack()} />
-        <Text style={styles.title}>Change Email or Password</Text>
-      </View>
-
       <TextInput
         style={styles.input}
-        placeholder="New Email"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
         placeholder="New Password"
-        value={newPassword}
         secureTextEntry
+        value={newPassword}
         onChangeText={setNewPassword}
       />
-      <Button title="Update" onPress={confirmUpdate} />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm New Password"
+        secureTextEntry
+        value={confirmNewPassword}
+        onChangeText={setConfirmNewPassword}
+      />
+      <Button title="Submit" onPress={handleSubmit} />
 
-      {/* Modal for old password confirmation */}
-      <Modal
-        visible={isPasswordModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setPasswordModalVisible(false)}
-      >
+      {/* Old password modal */}
+      <Modal visible={isOldPasswordModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Enter your old password to confirm</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Old Password"
-              secureTextEntry
-              value={oldPassword}
-              onChangeText={setOldPassword}
-            />
-            <Button title="Confirm" onPress={handleUpdate} />
-            <Button title="Cancel" onPress={() => setPasswordModalVisible(false)} />
-          </View>
+          <Text>Enter your old password to confirm</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Old Password"
+            secureTextEntry
+            value={oldPassword}
+            onChangeText={setOldPassword}
+          />
+          <Button title="Confirm" onPress={confirmUpdate} />
         </View>
       </Modal>
     </View>

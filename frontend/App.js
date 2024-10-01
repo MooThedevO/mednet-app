@@ -12,6 +12,11 @@ import EmailVerificationScreen from './screens/EmailVerificationScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChangeEmailPasswordScreen from './screens/ChangeEmailPasswordScreen';
+import DonationsScreen from './screens/DonationsScreen';
+import RequestsScreen from './screens/RequestsScreen';
+import AboutUsScreen from './screens/AboutUsScreen';
+import FAQScreen from './screens/FAQScreen';
+import HelpAndSupportScreen from './screens/HelpAndSupportScreen';
 
 // Stack Navigator for Login, Signup, and Email Verification
 const AuthStack = createStackNavigator();
@@ -29,6 +34,11 @@ const DrawerScreen = () => (
   <Drawer.Navigator initialRouteName="Home">
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Profile" component={ProfileScreen} />
+    <Drawer.Screen name="Donations" component={DonationsScreen} />
+    <Drawer.Screen name="Requests" component={RequestsScreen} />
+    <Drawer.Screen name="About Us" component={AboutUsScreen} />
+    <Drawer.Screen name="FAQ" component={FAQScreen} />
+    <Drawer.Screen name="Help and Support" component={HelpAndSupportScreen} />
   </Drawer.Navigator>
 );
 

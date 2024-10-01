@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Image, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TextInput, Button, Alert, Image, TouchableOpacity, Modal } from 'react-native';
 
 import { UserContext } from '../context/UserContext';
 import { getUserProfile, updateUserProfile, deleteUser } from '../services/api';
@@ -17,6 +17,7 @@ const ProfileScreen = ({ navigation }) => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
     // States for modals and input fields
     const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
@@ -31,7 +32,7 @@ const ProfileScreen = ({ navigation }) => {
         setProfileData(data);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        setError('Failed to load profile');
       }
     };
 
@@ -55,8 +56,7 @@ const ProfileScreen = ({ navigation }) => {
       await updateUserProfile(user.id, { ...profileData, password });
       Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'There was an error updating the profile');
+      setError('Failed to update profile');
     }
   };
   
@@ -66,25 +66,19 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const confirmUserDeletion = async () => {
-    setDeleteModalVisible(false); // Hide modal after input
-
-    if (confirmUsername === user.username) {
-      try {
-        await deleteUser(user.id);
-        Alert.alert('Success', 'Account deleted');
-        
-        // Reset the user context to null after deletion
-        setUser(null);
-
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'LoginScreen' }],
-        });
-        } catch (error) {
-        Alert.alert('Error', 'There was an error deleting your account');
-      }
-    } else {
+    if (confirmUsername !== user.username) {
       Alert.alert('Error', 'Username does not match');
+      return;
+    }
+    try {
+      await deleteUser(user.id);
+      setUser(null);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LoginScreen' }],
+      });
+    } catch (err) {
+      setError('Failed to delete account');
     }
   };
 
@@ -105,6 +99,7 @@ const ProfileScreen = ({ navigation }) => {
   const placeholderImage = 'https://via.placeholder.com/100'; 
   
   if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>{error}</Text>;
 
   return (
     <View style={styles.container}>
