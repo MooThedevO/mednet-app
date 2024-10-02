@@ -1,23 +1,26 @@
 import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
     backgroundColor: '#f5f5f5',
   },
-  heading: {
-    fontSize: 24,
+  label: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   input: {
-    borderWidth: 1,
+    height: 40,
     borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    marginBottom: 20,
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
     backgroundColor: '#fff',
+  },
+  button: {
+    marginTop: 20,
   },
 });

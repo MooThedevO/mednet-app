@@ -13,14 +13,16 @@ import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChangeEmailPasswordScreen from './screens/ChangeEmailPasswordScreen';
 import DonationsScreen from './screens/DonationsScreen';
-import RequestsScreen from './screens/RequestsScreen';
+import RequestListScreen from './screens/RequestListScreen';
+import RequestDetailsScreen from './screens/RequestDetailsScreen';
+import AddRequestScreen from './screens/AddRequestScreen';
+import UpdateRequestScreen from './screens/UpdateRequestScreen';
+import FulfillRequestScreen from './screens/FulfillRequestScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import FAQScreen from './screens/FAQScreen';
 import HelpAndSupportScreen from './screens/HelpAndSupportScreen';
 import AddDonationScreen from './screens/AddDonationScreen';
 import UpdateDonationScreen from './screens/UpdateDonationScreen';
-import AddRequestScreen from './screens/AddRequestScreen';
-import UpdateRequestScreen from './screens/UpdateRequestScreen';
 
 // Stack Navigator for Login, Signup, and Email Verification
 const AuthStack = createStackNavigator();
@@ -39,7 +41,7 @@ const DrawerScreen = () => (
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Profile" component={ProfileScreen} />
     <Drawer.Screen name="Donations" component={DonationsScreen} />
-    <Drawer.Screen name="Requests" component={RequestsScreen} />
+    <Drawer.Screen name="Requests" component={RequestListScreen} />
     <Drawer.Screen name="About Us" component={AboutUsScreen} />
     <Drawer.Screen name="FAQ" component={FAQScreen} />
     <Drawer.Screen name="Help and Support" component={HelpAndSupportScreen} />
@@ -56,6 +58,7 @@ const RootStackScreen = () => (
     <RootStack.Screen name="UpdateDonation" component={UpdateDonationScreen} />
     <RootStack.Screen name="AddRequest" component={AddRequestScreen} />
     <RootStack.Screen name="UpdateRequest" component={UpdateRequestScreen} />
+    <RootStack.Screen name="RequestDetailsScreen" component={RequestDetailsScreen} />
   </RootStack.Navigator>
 );
 

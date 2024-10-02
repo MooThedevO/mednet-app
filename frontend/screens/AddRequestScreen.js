@@ -1,46 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button, Text } from 'react-native';
 import { addRequest } from '../services/api';
-import { styles } from '../styles/AddRequestScreenStyle';
+import styles from '../styles/AddRequestScreenStyles';
 
 const AddRequestScreen = ({ navigation }) => {
-  const [medicationName, setMedicationName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  
-  const handleAddRequest = async () => {
-    if (!medicationName || !quantity) {
-      Alert.alert('Error', 'Please fill out all fields.');
-      return;
-    }
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
-    const requestData = { medication: { name: medicationName }, quantity };
-
+  const handleSubmit = async () => {
     try {
-      await addRequest(requestData);
-      Alert.alert('Success', 'Request added successfully!');
+      await addRequest({ name, description });
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', error.message);
+      console.error(error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Add Request</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Medication Name"
-        value={medicationName}
-        onChangeText={setMedicationName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Quantity"
-        value={quantity}
-        keyboardType="numeric"
-        onChangeText={setQuantity}
-      />
-      <Button title="Submit" onPress={handleAddRequest} />
+      <Text style={styles.label}>Request Name</Text>
+      <TextInput value={name} onChangeText={setName} style={styles.input} />
+      <Text style={styles.label}>Description</Text>
+      <TextInput value={description} onChangeText={setDescription} style={styles.input} />
+      <Button title="Submit" onPress={handleSubmit} />
     </View>
   );
 };

@@ -106,6 +106,16 @@ export const deleteRequest = async (requestId) => {
   }
 };
 
+// New API method to fulfill a request
+export const fulfillRequest = async (requestId, fulfillmentData) => {
+  try {
+    const response = await api.post(`/medication-requests/${requestId}/fulfill`, fulfillmentData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 // Donation-related API calls
 export const getAllDonations = async () => {
   try {
