@@ -65,6 +65,14 @@ const MedicationRequest = sequelize.define('MedicationRequest', {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false
+  },
+  pickupDate: {
+    type: DataTypes.DATE,
+    allowNull: true,  // Optional field, can be set later
+  },
+  pickupLocation: {
+    type: DataTypes.STRING,
+    allowNull: true,  // Optional field, can be set later
   }
 });
 

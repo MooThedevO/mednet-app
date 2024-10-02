@@ -5,7 +5,8 @@ const {
   getRequestById,
   addRequest,
   updateRequest,
-  deleteRequest
+  deleteRequest,
+  fulfillRequest
 } = require('../controllers/medicationRequestController');
 const { authMiddleware, authorizeSelf } = require('../middleware/authMiddleware');
 
@@ -18,5 +19,6 @@ router.get('/:requestId', getRequestById);
 router.post('/', [authMiddleware], addRequest);
 router.put('/:requestId', [authMiddleware, authorizeSelf()], updateRequest);
 router.delete('/:requestId', [authMiddleware, authorizeSelf()], deleteRequest);
+router.put('/:requestId/fulfill', [authMiddleware], fulfillRequest);
 
 module.exports = router;

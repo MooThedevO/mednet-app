@@ -77,3 +77,28 @@ exports.deleteRequest = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete medication request', details: error.message });
   }
 };
+
+// Mark a medication request as fulfilled
+exports.fulfillRequest = async (req, res) => {
+  try {
+    const request = await MedicationRequest.findByPk(req.params.requestId);
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    const fulfilledStatus = await RequestStatus.findOne({ where: { status: 'Fulfilled' } });
+    if (!fulfilledStatus) {
+      return res.status(404).json({ error: 'Fulfillment status not found' });
+    }
+
+    request.statusId = fulfilledStatus.id;
+    await request.save();
+
+    res.status(200).json({ message: 'Request marked as fulfilled', request });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to mark request as fulfilled',
+      details: error.message,
+    });
+  }
+};

@@ -17,6 +17,10 @@ import RequestsScreen from './screens/RequestsScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import FAQScreen from './screens/FAQScreen';
 import HelpAndSupportScreen from './screens/HelpAndSupportScreen';
+import AddDonationScreen from './screens/AddDonationScreen';
+import UpdateDonationScreen from './screens/UpdateDonationScreen';
+import AddRequestScreen from './screens/AddRequestScreen';
+import UpdateRequestScreen from './screens/UpdateRequestScreen';
 
 // Stack Navigator for Login, Signup, and Email Verification
 const AuthStack = createStackNavigator();
@@ -48,6 +52,10 @@ const RootStackScreen = () => (
   <RootStack.Navigator screenOptions={{ headerShown: false }}>
     <RootStack.Screen name="Drawer" component={DrawerScreen} />
     <RootStack.Screen name="ChangeEmailPassword" component={ChangeEmailPasswordScreen} />
+    <RootStack.Screen name="AddDonation" component={AddDonationScreen} />
+    <RootStack.Screen name="UpdateDonation" component={UpdateDonationScreen} />
+    <RootStack.Screen name="AddRequest" component={AddRequestScreen} />
+    <RootStack.Screen name="UpdateRequest" component={UpdateRequestScreen} />
   </RootStack.Navigator>
 );
 

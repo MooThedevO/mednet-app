@@ -1,4 +1,3 @@
-// controllers/donationController.js
 const Donation = require('../models/Donation');
 const Medication = require('../models/Medication');
 const User = require('../models/User');
