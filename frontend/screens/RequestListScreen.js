@@ -1,39 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { getAllRequests } from '../services/api';
 import styles from '../styles/RequestListScreenStyles';
 
-const RequestListScreen = ({ navigation }) => {
+const RequestListScreen = () => {
   const [requests, setRequests] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const data = await getAllRequests();
-        setRequests(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchRequests();
   }, []);
 
+  const fetchRequests = async () => {
+    try {
+      const response = await getAllRequests();
+      setRequests(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.requestItem}>
+      <Text style={styles.requestText}>User: {item.User.fullName}</Text>
+      <Text style={styles.requestText}>Medication: {item.Medication.name}</Text>
+      <TouchableOpacity
+        style={styles.detailsButton}
+        onPress={() => navigation.navigate('RequestDetails', { requestId: item.id })}
+      >
+        <Text style={styles.buttonText}>Details</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Requests</Text>
-      <Button title="Add New Request" onPress={() => navigation.navigate('AddRequest')} />
       <FlatList
         data={requests}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.requestItem}>
-            <Text>{item.name}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('RequestDetails', { requestId: item.id })}>
-              <Text style={styles.detailsButton}>Details</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       />
+      <Button title="Add New Request" onPress={() => navigation.navigate('AddRequest')} />
     </View>
   );
 };

@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
+import { View, Text, TextInput, Button } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 import { addRequest } from '../services/api';
 import styles from '../styles/AddRequestScreenStyles';
 
-const AddRequestScreen = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+const AddRequestScreen = () => {
+  const [medicationId, setMedicationId] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [urgencyId, setUrgencyId] = useState('');
+  const [conditionId, setConditionId] = useState('');
+  const [doctorPrescription, setDoctorPrescription] = useState(false);
+  const [isDonation, setIsDonation] = useState(false);
+  const navigation = useNavigation();
 
   const handleSubmit = async () => {
     try {
-      await addRequest({ name, description });
+      await addRequest({
+        medicationId,
+        quantity,
+        urgencyId,
+        conditionId,
+        doctorPrescription,
+        isDonation,
+      });
       navigation.goBack();
     } catch (error) {
       console.error(error);
@@ -18,11 +32,27 @@ const AddRequestScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Request Name</Text>
-      <TextInput value={name} onChangeText={setName} style={styles.input} />
-      <Text style={styles.label}>Description</Text>
-      <TextInput value={description} onChangeText={setDescription} style={styles.input} />
-      <Button title="Submit" onPress={handleSubmit} />
+      <Text>Medication:</Text>
+      <TextInput style={styles.input} value={medicationId} onChangeText={setMedicationId} placeholder="Enter Medication" />
+      <Text>Quantity:</Text>
+      <TextInput style={styles.input} value={quantity} onChangeText={setQuantity} placeholder="Enter Quantity" />
+      <Text>Urgency Level:</Text>
+      <Picker selectedValue={urgencyId} onValueChange={setUrgencyId}>
+        {/* Add urgency level options */}
+      </Picker>
+      <Text>Condition:</Text>
+      <Picker selectedValue={conditionId} onValueChange={setConditionId}>
+        {/* Add medical condition options */}
+      </Picker>
+      <View style={styles.checkboxContainer}>
+        <Text>Doctor Prescription:</Text>
+        <Switch value={doctorPrescription} onValueChange={setDoctorPrescription} />
+      </View>
+      <View style={styles.checkboxContainer}>
+        <Text>Donation Request:</Text>
+        <Switch value={isDonation} onValueChange={setIsDonation} />
+      </View>
+      <Button title="Add Request" onPress={handleSubmit} />
     </View>
   );
 };

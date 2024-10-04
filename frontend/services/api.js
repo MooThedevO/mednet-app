@@ -107,9 +107,9 @@ export const deleteRequest = async (requestId) => {
 };
 
 // New API method to fulfill a request
-export const fulfillRequest = async (requestId, fulfillmentData) => {
+export const fulfillRequest = async (requestId) => {
   try {
-    const response = await api.post(`/medication-requests/${requestId}/fulfill`, fulfillmentData);
+    const response = await api.post(`/medication-requests/${requestId}/fulfill`);
     return response.data;
   } catch (error) {
     handleApiError(error);

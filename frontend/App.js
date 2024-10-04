@@ -59,6 +59,7 @@ const RootStackScreen = () => (
     <RootStack.Screen name="AddRequest" component={AddRequestScreen} />
     <RootStack.Screen name="UpdateRequest" component={UpdateRequestScreen} />
     <RootStack.Screen name="RequestDetailsScreen" component={RequestDetailsScreen} />
+    <RootStack.Screen name="FulfillRequestScreen" component={FulfillRequestScreen} />
   </RootStack.Navigator>
 );
 
