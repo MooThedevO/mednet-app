@@ -55,7 +55,7 @@ const RequestDetailsScreen = () => {
       <Text style={styles.detailText}>User: {request.User.fullName}</Text>
       <Text style={styles.detailText}>Medication: {request.Medication.name}</Text>
       <Text style={styles.detailText}>Quantity: {request.quantity}</Text>
-      <Text style={styles.detailText}>Urgency: {request.UrgencyLevel.name}</Text>
+      <Text style={styles.detailText}>Urgency: {request.UrgencyLevel.level}</Text>
       <Text style={styles.detailText}>Condition: {request.MedicalCondition.name}</Text>
       <Text style={styles.detailText}>Doctor Prescription: {request.doctorPrescription ? 'Yes' : 'No'}</Text>
       <Text style={styles.detailText}>Donation Request: {request.isDonation ? 'Yes' : 'No'}</Text>

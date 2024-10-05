@@ -9,7 +9,7 @@ router.get('/', getAllMedications);
 router.get('/:medId', getMedicationById);
 
 // Protected routes
-router.post('/', [authMiddleware, authorize(['pharmacy','admin','superadmin'])], addMedication);
+router.post('/', [authMiddleware], addMedication);
 router.put('/:medId', [authMiddleware, authorize(['admin','superadmin'])], updateMedication);
 router.delete('/:medId', [authMiddleware, authorize([,'admin','superadmin'])], deleteMedication);
 

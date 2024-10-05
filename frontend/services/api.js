@@ -60,6 +60,86 @@ export const updateEmailOrPassword = async (userId, { oldPassword, newEmail, new
   }
 };
 
+// Fetch available medications
+export const fetchMedications = async () => {
+  try {
+    const response = await api.get('/medications');
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+//add medication
+export const addMedication = async (requestData) => {
+  try {
+    const response = await api.post('/medications', requestData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Fetch medication by ID
+export const getMedicationById = async (medId) => {
+  try {
+    const response = await api.get(`/medications/${medId}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Update medication
+export const updateMedication = async (medId, medicationData) => {
+  try {
+    const response = await api.put(`/medications/${medId}`, medicationData);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Delete medication
+export const deleteMedication = async (medId) => {
+  try {
+    const response = await api.delete(`/medications/${medId}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Fetch urgency levels
+export const fetchUrgencyLevels = async () => {
+  try {
+    const response = await api.get('/request-urgency');
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Fetch medical conditions
+export const fetchConditions = async () => {
+  try {
+    const response = await api.get('/medical-condition');
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// Fetch mediction forms
+export const fetchMedForms = async () => {
+  try {
+    const response = await api.get('/medforms');
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 // Request-related API calls
 export const getAllRequests = async () => {
   try {

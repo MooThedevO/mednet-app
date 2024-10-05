@@ -23,6 +23,10 @@ import FAQScreen from './screens/FAQScreen';
 import HelpAndSupportScreen from './screens/HelpAndSupportScreen';
 import AddDonationScreen from './screens/AddDonationScreen';
 import UpdateDonationScreen from './screens/UpdateDonationScreen';
+import MedicationListScreen from './screens/MedicationListScreen';  
+import MedicationDetailsScreen from './screens/MedicationDetailsScreen';
+import AddMedicationScreen from './screens/AddMedicationScreen';
+import UpdateMedicationScreen from './screens/UpdateMedicationScreen';
 
 // Stack Navigator for Login, Signup, and Email Verification
 const AuthStack = createStackNavigator();
@@ -40,6 +44,7 @@ const DrawerScreen = () => (
   <Drawer.Navigator initialRouteName="Home">
     <Drawer.Screen name="Home" component={HomeScreen} />
     <Drawer.Screen name="Profile" component={ProfileScreen} />
+    <Drawer.Screen name="Medications" component={MedicationListScreen} />  
     <Drawer.Screen name="Donations" component={DonationsScreen} />
     <Drawer.Screen name="Requests" component={RequestListScreen} />
     <Drawer.Screen name="About Us" component={AboutUsScreen} />
@@ -60,6 +65,9 @@ const RootStackScreen = () => (
     <RootStack.Screen name="UpdateRequest" component={UpdateRequestScreen} />
     <RootStack.Screen name="RequestDetailsScreen" component={RequestDetailsScreen} />
     <RootStack.Screen name="FulfillRequestScreen" component={FulfillRequestScreen} />
+    <RootStack.Screen name="MedicationDetails" component={MedicationDetailsScreen} />
+    <RootStack.Screen name="AddMedication" component={AddMedicationScreen} />
+    <RootStack.Screen name="UpdateMedication" component={UpdateMedicationScreen} />
   </RootStack.Navigator>
 );
 

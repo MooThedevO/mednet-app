@@ -36,7 +36,6 @@ exports.getRequestById = async (req, res) => {
 // Add a new medication request
 exports.addRequest = async (req, res) => {
   const { userId, medicationId, quantity, urgencyId, conditionId, doctorPrescription, isDonation, statusId } = req.body;
-
   if (!userId || !medicationId || !quantity || !urgencyId || !conditionId || !statusId) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
