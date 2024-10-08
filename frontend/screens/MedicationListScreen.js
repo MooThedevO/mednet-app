@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { fetchMedications } from '../services/api'; 
 import styles from '../styles/MedicationListScreenStyles';
 
 const MedicationListScreen = () => {
   const [medications, setMedications] = useState([]);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    getAllMedications();
-  }, []);
 
   const getAllMedications = async () => {
     try {
@@ -20,6 +16,12 @@ const MedicationListScreen = () => {
       console.error(error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      getAllMedications();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <View style={styles.medicationItem}>

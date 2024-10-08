@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getAllRequests } from '../services/api';
 import styles from '../styles/RequestListScreenStyles';
 
 const RequestListScreen = () => {
   const [requests, setRequests] = useState([]);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    fetchRequests();
-  }, []);
 
   const fetchRequests = async () => {
     try {
@@ -20,6 +16,13 @@ const RequestListScreen = () => {
       console.error(error);
     }
   };
+  
+  // Re-fetch data when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchRequests();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <View style={styles.requestItem}>
