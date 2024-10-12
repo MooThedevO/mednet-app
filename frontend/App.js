@@ -17,7 +17,6 @@ import RequestListScreen from './screens/RequestListScreen';
 import RequestDetailsScreen from './screens/RequestDetailsScreen';
 import AddRequestScreen from './screens/AddRequestScreen';
 import UpdateRequestScreen from './screens/UpdateRequestScreen';
-import FulfillRequestScreen from './screens/FulfillRequestScreen';
 import AboutUsScreen from './screens/AboutUsScreen';
 import FAQScreen from './screens/FAQScreen';
 import HelpAndSupportScreen from './screens/HelpAndSupportScreen';
@@ -64,7 +63,6 @@ const RootStackScreen = () => (
     <RootStack.Screen name="AddRequest" component={AddRequestScreen} />
     <RootStack.Screen name="UpdateRequest" component={UpdateRequestScreen} />
     <RootStack.Screen name="RequestDetailsScreen" component={RequestDetailsScreen} />
-    <RootStack.Screen name="FulfillRequestScreen" component={FulfillRequestScreen} />
     <RootStack.Screen name="MedicationDetails" component={MedicationDetailsScreen} />
     <RootStack.Screen name="AddMedication" component={AddMedicationScreen} />
     <RootStack.Screen name="UpdateMedication" component={UpdateMedicationScreen} />

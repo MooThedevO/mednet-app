@@ -85,11 +85,17 @@ exports.fulfillRequest = async (req, res) => {
       return res.status(404).json({ error: 'Request not found' });
     }
 
-    const fulfilledStatus = await RequestStatus.findOne({ where: { status: 'Fulfilled' } });
-    if (!fulfilledStatus) {
-      return res.status(404).json({ error: 'Fulfillment status not found' });
+    const underReviewStatus = await RequestStatus.findOne({ where: { status: 'Under Review' } });
+    if (!underReviewStatus) {
+      return res.status(404).json({ error: 'Review status not found' });
     }
 
+    // Check if the request is still pending, not fulfilled already
+    if (request.statusId !== underReviewStatus.id) {
+      return res.status(400).json({ error: 'Request is not ready for fulfillment' });
+    }
+
+    const fulfilledStatus = await RequestStatus.findOne({ where: { status: 'Fulfilled' } });
     request.statusId = fulfilledStatus.id;
     await request.save();
 
@@ -97,6 +103,30 @@ exports.fulfillRequest = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to mark request as fulfilled',
+      details: error.message,
+    });
+  }
+};
+
+exports.approveForDelivery = async (req, res) => {
+  try {
+    const request = await MedicationRequest.findByPk(req.params.requestId);
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    const awaitingDeliveryStatus = await RequestStatus.findOne({ where: { status: 'Awaiting Delivery' } });
+    if (!awaitingDeliveryStatus) {
+      return res.status(404).json({ error: 'Awaiting delivery status not found' });
+    }
+
+    request.statusId = awaitingDeliveryStatus.id;
+    await request.save();
+
+    res.status(200).json({ message: 'Request approved for delivery', request });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to approve request for delivery',
       details: error.message,
     });
   }

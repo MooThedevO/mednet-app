@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Button, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { getRequest, deleteRequest } from '../services/api';
+import { getRequest, deleteRequest, fulfillRequest, approveForDelivery  } from '../services/api';
 import { UserContext } from '../context/UserContext';
 import styles from '../styles/RequestDetailsScreenStyles.js';
 
@@ -23,6 +23,7 @@ const RequestDetailsScreen = () => {
       console.error(error);
     }
   };
+
   if (!request) return <Text>Loading...</Text>;
 
   const isCreator = request.userId === user.id;
@@ -49,6 +50,23 @@ const RequestDetailsScreen = () => {
     }
   };
 
+  const handleFulfillRequest = async () => {
+    try {
+      await fulfillRequest(requestId);
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleApproveForDelivery = async () => {
+    try {
+      await approveForDelivery(requestId);
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -67,8 +85,13 @@ const RequestDetailsScreen = () => {
           <Button title="Update Request" onPress={() => navigation.navigate('UpdateRequest', { requestId })} />
           <Button title="Delete Request" onPress={confirmDelete} />
         </>
-      ) : (
-        <Button title="Fulfill Request" onPress={() => navigation.navigate('FulfillRequest', { requestId })} />
+      ) : null}
+
+      {isAdmin && (
+        <>
+          <Button title="Approve for Delivery" onPress={handleApproveForDelivery} />
+          <Button title="Fulfill Request" onPress={handleFulfillRequest} />
+        </>
       )}
     </View>
   );

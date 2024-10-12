@@ -189,7 +189,17 @@ export const deleteRequest = async (requestId) => {
 // New API method to fulfill a request
 export const fulfillRequest = async (requestId) => {
   try {
-    const response = await api.post(`/medication-requests/${requestId}/fulfill`);
+    const response = await api.put(`/medication-requests/${requestId}/fulfill`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+// New API method to approve a request
+export const approveForDelivery = async (requestId) => {
+  try {
+    const response = await api.put(`/medication-requests/${requestId}/approve-delivery`);
     return response.data;
   } catch (error) {
     handleApiError(error);

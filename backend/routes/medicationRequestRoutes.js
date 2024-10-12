@@ -6,7 +6,8 @@ const {
   addRequest,
   updateRequest,
   deleteRequest,
-  fulfillRequest
+  fulfillRequest,
+  approveForDelivery
 } = require('../controllers/medicationRequestController');
 const { authMiddleware, authorizeSelf } = require('../middleware/authMiddleware');
 
@@ -20,5 +21,6 @@ router.post('/', [authMiddleware], addRequest);
 router.put('/:requestId', [authMiddleware, authorizeSelf()], updateRequest);
 router.delete('/:requestId', [authMiddleware, authorizeSelf()], deleteRequest);
 router.put('/:requestId/fulfill', [authMiddleware], fulfillRequest);
+router.put('/:requestId/approve-delivery', [authMiddleware], approveForDelivery);
 
 module.exports = router;
